@@ -1,7 +1,7 @@
 import { combine, createDomain, Domain, restore, Event, Store } from 'effector';
 import { useStore } from 'effector-react';
 
-export class Pagination {
+export class PaginationStore {
     private domain: Domain;
 
     decrementPage: Event<void>;

@@ -1,10 +1,10 @@
 import { pokemonFetcher } from './pokemon-fetcher';
 import { useEffect, useRef, useState } from 'react';
 import { combine, createDomain, restore } from 'effector';
-import { Pagination } from './pagination.store';
+import { PaginationStore } from './pagination.store';
 
 export const PokemonList = () => {
-    const paginationStore = useRef(new Pagination('PokemonListPagination'));
+    const paginationStore = useRef(new PaginationStore('PokemonListPagination'));
     const { page, decrementPage, incrementPage, setLimit, limit, offset } =
         paginationStore.current.use();
 

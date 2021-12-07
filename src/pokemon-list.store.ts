@@ -1,16 +1,16 @@
-import { createDomain } from 'effector-logger';
+import { createDomain } from 'effector';
 import { useStore } from 'effector-react';
 import { useCallback } from 'react';
 
 const apiUrl = 'https://pokeapi.co/api/v2/pokemon';
 
-type PaginationParams = { offset: number; limit: number };
+export type PaginationParams = { offset: number; limit: number };
 
-type PokemonListFetchFn = (params: PaginationParams) => Promise<{
+export type PokemonListFetchFn = (params: PaginationParams) => Promise<{
     results: Array<{ name: string }>;
 }>;
 
-export class PokemonFetcher {
+export class PokemonListStore {
     private domain = createDomain('PokemonFetcher');
 
     private fetchPokemonsFx = this.domain.createEffect({
@@ -19,6 +19,10 @@ export class PokemonFetcher {
             return this.fetchFn(params);
         },
     });
+
+    fetchPokemonsList(params: PaginationParams) {
+        return this.fetchPokemonsFx(params)
+    }
 
     pokemonList$ = this.domain
         .createStore<Array<string> | null>(null, { name: 'pokemonList$' })
@@ -58,4 +62,4 @@ const fetchFn: PokemonListFetchFn = async (params: PaginationParams) => {
         .then((r) => r.json());
 };
 
-export const pokemonFetcher = new PokemonFetcher(fetchFn);
+export const pokemonFetcher = new PokemonListStore(fetchFn);
