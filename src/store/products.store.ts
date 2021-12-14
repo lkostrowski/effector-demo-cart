@@ -22,3 +22,4 @@ const genProducts = (count: number): Product[] => {
 };
 
 export const products$ = createStore<Product[]>(genProducts(4));
+
