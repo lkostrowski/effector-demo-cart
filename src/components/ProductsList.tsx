@@ -1,12 +1,15 @@
 import { useEvent, useStore } from 'effector-react/effector-react.cjs';
 import { products$ } from '../store/products.store';
-import { cartEvents, loading$ } from '../store/cart.store';
+import { CartEvents, loading$ } from '../store/cart.store';
 import { Box, Button, Container, Image, Text } from '@chakra-ui/react';
+
+const addToCart = (data: {id: string}) =>{}
+const loading = false
 
 export const ProductsList = () => {
     const products = useStore(products$);
-    const addToCart = useEvent(cartEvents.productAddedToCart);
-    const loading = useStore(loading$)
+    // const addToCart = useEvent(cartEvents.productAddedToCart);
+    // const loading = useStore(loading$)
 
     return (
         <Container className='grid'>

@@ -1,51 +1,54 @@
-import { combine, createEvent, createStore, merge } from 'effector-logger';
+import {
+    combine,
+    createEvent,
+    createStore,
+    merge,
+    createEffect,
+} from 'effector-logger';
 import { products$ } from './products.store';
-import { createEffect } from 'effector/effector.cjs';
-gs
-const productAddedToCart = createEvent<{ id: string }>();
-const productRemovedFromCart = createEvent<{ id: string }>();
 
-export const cartEvents = {
-    productAddedToCart,
-    productRemovedFromCart,
+export const CartEvents = {
+    productAddedToCart: createEvent<{ id: string }>(),
+    productRemovedFromCart: createEvent<{ id: string }>(),
 };
 
-type ProductsInCard = {
+type ProductsInCartRecord = {
     [productID: string]: number;
 };
 
-const cartProducts$ = createStore<ProductsInCard>({})
-    .on(productAddedToCart, (state, payload) => {
+const cartProducts$ = createStore<ProductsInCartRecord>({})
+    .on(CartEvents.productAddedToCart, (state, payload) => {
         return {
             ...state,
             [payload.id]: state[payload.id] ? state[payload.id] + 1 : 1,
         };
     })
-    .on(productRemovedFromCart, (state, payload) => {
+    .on(CartEvents.productRemovedFromCart, (state, payload) => {
         const newState = { ...state };
         delete newState[payload.id];
 
         return newState;
     });
 
-const addProductFx = createEffect(async (id: string) => {
-    // Fetch POST
+const Effects = {
+    addProductFx: createEffect(async (id: string) => {
+        // Fetch POST
 
-    await new Promise(res => setTimeout(res, 1000))
-});
+        await new Promise((res) => setTimeout(res, 1000));
+    }),
 
-const removeProductFx = createEffect(async (id: string) => {
-    // Fetch DELETE
-    await new Promise(res => setTimeout(res, 1000))
-});
+    removeProductFx: createEffect(async (id: string) => {
+        // Fetch DELETE
+        await new Promise((res) => setTimeout(res, 1000));
+    }),
+};
 
-const fetchEvents = merge([addProductFx, removeProductFx]);
-const fetchEventsDone = merge([addProductFx.finally, removeProductFx.finally]);
-
-export const loading$ = createStore(false).on(fetchEvents, () => true).on(fetchEventsDone, () => false);
-
-productAddedToCart.watch((payload) => addProductFx(payload.id));
-productRemovedFromCart.watch((payload) => removeProductFx(payload.id));
+CartEvents.productAddedToCart.watch((payload) =>
+    Effects.addProductFx(payload.id),
+);
+CartEvents.productRemovedFromCart.watch((payload) =>
+    Effects.removeProductFx(payload.id),
+);
 
 const cartProductsArray$ = cartProducts$.map((productsRecord) =>
     Object.entries(productsRecord).map(([productID, productCount]) => {
@@ -55,6 +58,21 @@ const cartProductsArray$ = cartProducts$.map((productsRecord) =>
         };
     }),
 );
+
+const pendingEffectsCombined = merge([
+    Effects.addProductFx,
+    Effects.removeProductFx,
+]);
+const doneEffectsCombined = merge([
+    Effects.addProductFx.finally,
+    Effects.removeProductFx.finally,
+]);
+
+// Views
+
+export const loading$ = createStore(false)
+    .on(pendingEffectsCombined, () => true)
+    .on(doneEffectsCombined, () => false);
 
 export const cartProductsView$ = combine(
     {
