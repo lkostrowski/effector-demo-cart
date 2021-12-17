@@ -1,20 +1,14 @@
 import { useEvent, useStore } from 'effector-react/effector-react.cjs';
 import {
-    CartEvents,
-    cartProductsView$,
-    totalPrice$,
+     cartProductsView$, totalPrice$, CartEvents, loading$,
 } from '../store/cart.store';
 import { Box, IconButton, Table, Tbody, Td, Text, Tr } from '@chakra-ui/react';
 import { FiTrash } from 'react-icons/fi';
 
-const cartProducts = [];
-const totalPrice = 0;
-const removeFromCart = (params: { id: string }) => {};
-
 export const Cart = () => {
-    // const cartProducts = useStore(cartProductsView$);
-    // const totalPrice = useStore(totalPrice$);
-    // const removeFromCart = useEvent(cartEvents.productRemovedFromCart);
+    const cartProducts = useStore(cartProductsView$);
+    const totalPrice = useStore(totalPrice$);
+    const removeFromCart = useEvent(CartEvents.productRemovedFromCart);
 
     const renderEmpty = () => <Text>Empty</Text>;
     const renderProducts = () => (
